@@ -39,37 +39,49 @@ defmodule HelloWorld.Greeting do
       )
     }
 
-    # Blank on init
-    %{name: ""}
+    # State: :dont_know
+    {:dont_know}
   end
 
   @impl true
-  def yield(id, %{name: name}) do
+  def yield(id, {:dont_know}) do
     # Wait for events
     event = perform id, %Receive{}
 
     case event.body do
       %HelloWorld.Events.MyNameIs{name: name} ->
-        # Update state with the given name
-        %{name: name}
+        # Update state to :know with the name
+        {:know, %{name: name}}
       %HelloWorld.Events.Greeting{} ->
-        # Prepare a message based on the current state
-        message = case name do
-          "" -> "What is your name?"
-          _ -> "Hello #{name}"
-        end
-
         # Respond to "Greeting" event
         perform id, %Dispatch{
           body: %HelloWorld.Events.Greeting.Reply{
             greeting_id: event.id,
-            message: message,
-            name: name
+            message: "What is your name?",
+            name: ""
           }
         }
 
         # No changes
-        %{name: name}
+        {:dont_know}
     end
+  end
+
+  @impl true
+  def yield(id, {:know, %{name: name}}) do
+    # Wait for "Greeting" event
+    event = perform id, %Receive{}
+
+    # Respond to "Greeting" event
+    perform id, %Dispatch{
+      body: %HelloWorld.Events.Greeting.Reply{
+        greeting_id: event.id,
+        message: "Hello #{name}",
+        name: name
+      }
+    }
+
+    # No changes
+    {:know, %{name: name}}
   end
 end
