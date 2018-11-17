@@ -1,1 +1,8 @@
 <h1><%= @message %></h1>
+<p>
+  <form method="POST" action="/name">
+    <input type="hidden" name="_csrf_token" value="<%= @token %>" />
+    <input type="text" name="name" value="<%= @name %>" />
+    <input type="submit" value="Tell" />
+  </form>
+</p>

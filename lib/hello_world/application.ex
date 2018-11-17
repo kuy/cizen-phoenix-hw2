@@ -10,8 +10,8 @@ defmodule HelloWorld.Application do
     children = [
       HelloWorldWeb.Endpoint,
       %{
-        id: HelloWorld.GreetingAutomaton,
-        start: {Cizen.Saga, :start_link, [%HelloWorld.GreetingAutomaton{}]}
+        id: HelloWorld.Greeting,
+        start: {Cizen.Saga, :start_link, [%HelloWorld.Greeting{}]}
       }
     ]
 
