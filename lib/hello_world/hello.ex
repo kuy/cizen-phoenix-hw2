@@ -40,11 +40,11 @@ defmodule HelloWorld.Greeting do
     }
 
     # State: :dont_know
-    {:dont_know}
+    :dont_know
   end
 
   @impl true
-  def yield(id, {:dont_know}) do
+  def yield(id, :dont_know) do
     # Wait for events
     event = perform id, %Receive{}
 
@@ -63,25 +63,31 @@ defmodule HelloWorld.Greeting do
         }
 
         # No changes
-        {:dont_know}
+        :dont_know
     end
   end
 
   @impl true
   def yield(id, {:know, %{name: name}}) do
-    # Wait for "Greeting" event
+    # Wait for events
     event = perform id, %Receive{}
 
-    # Respond to "Greeting" event
-    perform id, %Dispatch{
-      body: %HelloWorld.Events.Greeting.Reply{
-        greeting_id: event.id,
-        message: "Hello #{name}",
-        name: name
-      }
-    }
+    case event.body do
+      %HelloWorld.Events.Greeting{} ->
+        # Respond to "Greeting" event
+        perform id, %Dispatch{
+          body: %HelloWorld.Events.Greeting.Reply{
+            greeting_id: event.id,
+            message: "Hello #{name}",
+            name: name
+          }
+        }
 
-    # No changes
-    {:know, %{name: name}}
+        # No changes
+        {:know, %{name: name}}
+
+      # Ignore "MyNameIs" event
+      _ -> {:know, %{name: name}}
+    end
   end
 end
