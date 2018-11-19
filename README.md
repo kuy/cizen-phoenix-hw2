@@ -1,6 +1,6 @@
 ## cizen-phoenix-hello-world-part2
 
-This is a tutorial application for "Integrating Cizen with Phoenix (Part 2)".
+This is an example application for ["Integrating Cizen with Phoenix (Part 2)"](https://medium.com/cizen/integrating-cizen-with-phoenix-part-2-f2260859391).
 
 ### Run
 
